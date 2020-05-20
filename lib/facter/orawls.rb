@@ -104,6 +104,7 @@ def get_opatch_patches(name)
   result = Facter.value(:opatch_patches)
   if ! result.nil?
     return result
+  end
 
   opatch_out = Facter::Util::Resolution.exec(get_su_command + get_weblogic_user + ' -c "' + name + '/OPatch/opatch lspatches"')
   return nil if opatch_out.nil?

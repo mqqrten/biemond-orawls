@@ -155,7 +155,7 @@ def get_orainst_products(path)
       end
       Facter.add('ora_mdw_opatch_patches') do
         # Puppet.info "-all patches hash- #{patches_fact}"
-        setcode { patches_fact }
+        setcode { Facter.value(:opatch_patches) }
       end
       return software
     else

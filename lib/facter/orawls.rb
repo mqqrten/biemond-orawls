@@ -101,20 +101,21 @@ def get_opatch_version(name)
 end
 
 def get_opatch_patches(name)
-  result = Facter.value(:opatch_patches)
-  if ! result.nil?
-    return result
-  else
-    opatch_out = Facter::Util::Resolution.exec(get_su_command + get_weblogic_user + ' -c "' + name + '/OPatch/opatch lspatches"')
-    return nil if opatch_out.nil?
-
-    opatch_out.each_line.collect do |line|
-      next unless line =~ /^\d+;/
-      # Puppet.info "-patches- #{line}"
-      split_line = line.split(';')
-      { 'patch_id' => split_line[0], 'patch_desc' => (split_line[1] && split_line[1].chomp) }
-    end.compact
+  opatch_out = nil
+  for a in 1..5 do
+    if opatch_out.nil?
+      opatch_out = Facter::Util::Resolution.exec(get_su_command + get_weblogic_user + ' -c "' + name + '/OPatch/opatch lspatches"')
+    end
   end
+    
+  return nil if opatch_out.nil?
+
+  opatch_out.each_line.collect do |line|
+    next unless line =~ /^\d+;/
+    # Puppet.info "-patches- #{line}"
+    split_line = line.split(';')
+    { 'patch_id' => split_line[0], 'patch_desc' => (split_line[1] && split_line[1].chomp) }
+  end.compact
 end
 
 def get_orainst_products(path)
